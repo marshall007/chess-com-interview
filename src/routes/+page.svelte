@@ -4,16 +4,22 @@
 	import type { Key } from 'chessground/types';
 
   let chessground: Chessground;
-  export let moves: Key[] = [];
+  let lastMove: string;
+  let moves: Key[] = [];
 
   const config: Config = {
     fen: '8/8/8/8/8/8/8/8 w - - 0 1',
+    draggable: { enabled: false },
     drawable: {
       enabled: false,
     },
     events: {
       select(key) {
-        moves = [...moves, key];
+        if (lastMove !== key) {
+          moves = [...moves, key];
+          lastMove = key;
+          chessground.setAutoShapes([{ orig: key, brush: 'green' }]);
+        }
       }
     }
   };
