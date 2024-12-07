@@ -1,47 +1,45 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue';
-import TheWelcome from './components/TheWelcome.vue';
+import { ref } from 'vue';
+
+import type { Key } from 'chessground/types';
+import type { Api } from 'chessground/api';
+import type { Config } from 'chessground/config';
+
+import Chessboard from '@/components/Chessboard.vue';
+
+let board: Api;
+
+let lastMove: string;
+const moves = ref<Key[]>([]);
+
+const config: Config = {
+  fen: '8/8/8/8/8/8/8/8 w - - 0 1',
+  draggable: { enabled: false },
+  drawable: { enabled: false },
+  events: {
+    select(key) {
+      if (lastMove !== key) {
+        moves.value.push(key);
+        lastMove = key;
+        board.setShapes([{ orig: key, dest: key, brush: 'green' }]);
+      }
+    },
+  },
+};
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <Chessboard class="board" :config="config" @ready="(api) => (board = api)" />
+  <aside class="moves">
+    <h4>Total Moves: {{ moves.length }}</h4>
+    <ol>
+      <li v-for="(move, index) in moves" v-bind:key="index">{{ move }}</li>
+    </ol>
+  </aside>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+<style>
+.moves {
+  overflow-y: scroll;
 }
 </style>
