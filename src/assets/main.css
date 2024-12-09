@@ -1,16 +1,30 @@
 @import './base.css';
 
-#app {
-  height: 100%;
-  width: 100%;
-  font-weight: normal;
-  display: grid;
-  grid-template-rows: auto 8rem;
+/* semantic color variables for this project */
+:root {
+  --color-background: #312e2b;
+  --color-border: rgba(108, 108, 108, 0.8);
+  --color-text: #ffffff;
+
+  --section-gap: 1rem;
 }
 
-@media (min-width: 1024px) {
+body {
+  color: var(--color-text);
+  background: var(--color-background);
+}
+
+#app {
+  height: 100vh;
+  width: 100vw;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+@media (max-width: 1024px) {
   #app {
-    grid-template-columns: 80% 20%;
-    grid-template-rows: none;
+    flex-direction: column;
   }
 }

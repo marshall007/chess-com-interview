@@ -25,18 +25,15 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="board">
+  <div>
     <div class="cg-wrap" ref="el"></div>
   </div>
 </template>
 
 <style>
-.board {
-  display: flex;
-}
-
 .cg-wrap {
-  aspect-ratio: 1 / 1;
+  width: 100%;
+  height: 100%;
 }
 
 /* chessground.base.css */

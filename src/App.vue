@@ -5,7 +5,7 @@ import type { Key } from 'chessground/types';
 import type { Api } from 'chessground/api';
 import type { Config } from 'chessground/config';
 
-import Chessboard from '@/components/Chessboard.vue';
+import ChessBoard from '@/components/ChessBoard.vue';
 
 let board: Api;
 
@@ -14,6 +14,7 @@ const moves = ref<Key[]>([]);
 
 const config: Config = {
   fen: '8/8/8/8/8/8/8/8 w - - 0 1',
+  coordinates: false,
   draggable: { enabled: false },
   drawable: { enabled: false },
   events: {
@@ -29,7 +30,7 @@ const config: Config = {
 </script>
 
 <template>
-  <Chessboard class="board" :config="config" @ready="(api) => (board = api)" />
+  <ChessBoard class="board" :config="config" @ready="(api) => (board = api)" />
   <aside class="moves">
     <h4>Total Moves: {{ moves.length }}</h4>
     <ol>
@@ -38,8 +39,75 @@ const config: Config = {
   </aside>
 </template>
 
-<style>
+<style lang="scss">
+:root {
+  --sidebar-dimension: 200px;
+  --board-max-width: calc(100vw - (var(--section-gap) * 2) - var(--sidebar-dimension));
+  --board-max-height: calc(90vh - (var(--section-gap) * 2));
+
+  --board-dimension: min(var(--board-max-width), var(--board-max-height));
+}
+
+.board {
+  height: var(--board-dimension);
+  width: var(--board-dimension);
+  aspect-ratio: 1 / 1;
+  margin: var(--section-gap);
+}
+
 .moves {
-  overflow-y: scroll;
+  flex-grow: 1;
+  min-height: 0;
+  min-width: var(--sidebar-dimension);
+  display: flex;
+  flex-direction: column;
+
+  h4 {
+    flex: 0;
+    margin: var(--section-gap) 0;
+    font-weight: bold;
+  }
+
+  ol {
+    padding: 0;
+    flex: 0 auto;
+    overflow-y: scroll;
+
+    list-style: none;
+    counter-reset: move-counter;
+
+    li {
+      counter-increment: move-counter;
+      padding: 2px;
+
+      &:before {
+        display: inline-block;
+        width: 35px;
+        content: counter(move-counter) '. ';
+      }
+
+      &:nth-child(odd) {
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      &:not(:last-child) {
+        border-bottom: 1px solid var(--color-border);
+      }
+    }
+  }
+}
+
+@media (max-width: 1024px) {
+  .board {
+    margin: var(--section-gap) auto;
+  }
+  .moves {
+    margin-left: var(--section-gap);
+    ol {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(4, 1fr);
+    }
+  }
 }
 </style>
