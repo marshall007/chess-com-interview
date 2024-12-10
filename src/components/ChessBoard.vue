@@ -1,26 +1,42 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
+
 import { Chessground } from 'chessground';
 import type { Api } from 'chessground/api';
 import type { Config } from 'chessground/config';
+import type { Key } from 'chessground/types';
+
+export type BoardConfig = Omit<Config, 'events'>;
+
+export type { Api as Board, Key };
 
 const props = defineProps<{
   config: Config;
 }>();
 const emit = defineEmits<{
-  ready: [value: Api];
+  board: [value: Api];
+  select: [board: Api, square: Key];
 }>();
 
-const el = ref<HTMLElement | null>(null);
 let board: Api;
+const el = ref<HTMLElement | null>(null);
 
 onMounted(() => {
   if (el.value == null) {
     throw new Error('Failed to mount board to DOM element.');
   }
 
-  board = Chessground(el.value, props.config);
-  emit('ready', board);
+  const config: Config = {
+    ...props.config,
+    events: {
+      select(...args) {
+        emit('select', board, ...args);
+      },
+    },
+  };
+
+  board = Chessground(el.value, config);
+  emit('board', board);
 });
 </script>
 
@@ -35,6 +51,8 @@ onMounted(() => {
   width: 100%;
   height: 100%;
 }
+
+/* copied from https://github.com/lichess-org/chessground/blob/master/assets */
 
 /* chessground.base.css */
 

@@ -1,6 +1,6 @@
 @import './base.css';
 
-/* semantic color variables for this project */
+/* global variables for this project */
 :root {
   --color-background: #312e2b;
   --color-border: rgba(108, 108, 108, 0.8);
@@ -25,6 +25,7 @@ body {
 
 @media (orientation: portrait) {
   #app {
+    // move list on bottom in portait mode
     flex-direction: column;
   }
 }
