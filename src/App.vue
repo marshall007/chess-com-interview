@@ -30,7 +30,9 @@ const config: Config = {
 </script>
 
 <template>
-  <ChessBoard class="board" :config="config" @ready="(api) => (board = api)" />
+  <main class="board">
+    <ChessBoard class="square" :config="config" @ready="(api) => (board = api)" />
+  </main>
   <aside class="moves">
     <h4>Total Moves: {{ moves.length }}</h4>
     <ol>
@@ -40,31 +42,27 @@ const config: Config = {
 </template>
 
 <style lang="scss">
-:root {
-  --sidebar-dimension: 200px;
-  --board-max-width: calc(100vw - (var(--section-gap) * 2) - var(--sidebar-dimension));
-  --board-max-height: calc(90vh - (var(--section-gap) * 2));
-
-  --board-dimension: min(var(--board-max-width), var(--board-max-height));
-}
-
 .board {
-  height: var(--board-dimension);
-  width: var(--board-dimension);
-  aspect-ratio: 1 / 1;
+  flex: 80%;
   margin: var(--section-gap);
 }
 
+.square {
+  max-height: 100%;
+  max-width: 100%;
+  aspect-ratio: 1 / 1;
+}
+
 .moves {
-  flex-grow: 1;
-  min-height: 0;
-  min-width: var(--sidebar-dimension);
+  flex: 20%;
   display: flex;
   flex-direction: column;
+  margin: var(--section-gap);
+  min-height: 0;
 
   h4 {
     flex: 0;
-    margin: var(--section-gap) 0;
+    margin-bottom: var(--section-gap);
     font-weight: bold;
   }
 
@@ -97,12 +95,14 @@ const config: Config = {
   }
 }
 
-@media (max-width: 1024px) {
+@media (orientation: portrait) {
   .board {
-    margin: var(--section-gap) auto;
+    max-height: 80%;
   }
+
   .moves {
-    margin-left: var(--section-gap);
+    flex: 50%;
+
     ol {
       display: grid;
       grid-template-columns: repeat(4, 1fr);

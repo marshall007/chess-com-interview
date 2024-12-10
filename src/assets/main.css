@@ -23,7 +23,7 @@ body {
   justify-content: center;
 }
 
-@media (max-width: 1024px) {
+@media (orientation: portrait) {
   #app {
     flex-direction: column;
   }
