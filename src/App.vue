@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import type { Key } from 'chessground/types';
 import type { Api } from 'chessground/api';
 import type { Config } from 'chessground/config';
+import type { Key } from 'chessground/types';
 
 import ChessBoard from '@/components/ChessBoard.vue';
 
@@ -101,7 +101,7 @@ const config: Config = {
   }
 
   .moves {
-    flex: 50%;
+    flex: 80%;
 
     ol {
       display: grid;
