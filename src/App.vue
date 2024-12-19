@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-import ChessBoard, { type Board, type BoardConfig, type Key } from '@/components/ChessBoard.vue';
+import ChessBoard from '@/components/ChessBoard.vue';
+import type { Board, BoardConfig, Key } from '@/components/ChessBoard.vue';
 
-let lastMove: string;
 const moves = ref<Key[]>([]);
 
 const config: BoardConfig = {
@@ -14,9 +14,9 @@ const config: BoardConfig = {
 };
 
 function onSelect(board: Board, square: Key) {
+  const lastMove = moves.value[moves.value.length - 1];
   if (lastMove !== square) {
     moves.value.push(square);
-    lastMove = square;
     board.setShapes([{ orig: square, brush: 'green' }]);
   }
 }
@@ -24,17 +24,17 @@ function onSelect(board: Board, square: Key) {
 
 <template>
   <main class="board">
-    <ChessBoard class="square" :config="config" @select="onSelect" />
+    <ChessBoard class="square" :config @select="onSelect" />
   </main>
   <aside class="moves">
     <h3>Total Moves: {{ moves.length }}</h3>
     <ol>
-      <li v-for="(move, index) in moves" v-bind:key="index">{{ move }}</li>
+      <li v-for="(move, index) in moves" :key="index">{{ move }}</li>
     </ol>
   </aside>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .board {
   flex: 80%;
   margin: var(--section-gap);
