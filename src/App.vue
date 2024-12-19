@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { nextTick, ref, useTemplateRef } from 'vue';
 
 import ChessBoard from '@/components/ChessBoard.vue';
 import type { Board, BoardConfig, Key } from '@/components/ChessBoard.vue';
 
+const moveList = useTemplateRef('moveList');
 const moves = ref<Key[]>([]);
 
 const config: BoardConfig = {
@@ -13,11 +14,26 @@ const config: BoardConfig = {
   drawable: { enabled: false },
 };
 
-function onSelect(board: Board, square: Key) {
+async function onSelect(board: Board, square: Key) {
   const lastMove = moves.value[moves.value.length - 1];
+
   if (lastMove !== square) {
-    moves.value.push(square);
-    board.setShapes([{ orig: square, brush: 'green' }]);
+    const moveIndex = moves.value.push(square);
+    board.setShapes([
+      {
+        orig: square,
+        brush: 'green',
+        label: {
+          text: moveIndex.toString(),
+          fill: 'rgba(102,102,102,0.6)',
+        },
+      },
+    ]);
+
+    await nextTick();
+    if (moveList?.value) {
+      moveList.value.$el.scrollTop = moveList.value.$el.scrollHeight;
+    }
   }
 }
 </script>
@@ -28,9 +44,9 @@ function onSelect(board: Board, square: Key) {
   </main>
   <aside class="moves">
     <h3>Total Moves: {{ moves.length }}</h3>
-    <ol>
+    <TransitionGroup name="list" tag="ol" ref="moveList">
       <li v-for="(move, index) in moves" :key="index">{{ move }}</li>
-    </ol>
+    </TransitionGroup>
   </aside>
 </template>
 
@@ -50,6 +66,8 @@ function onSelect(board: Board, square: Key) {
 }
 
 .moves {
+  --move-grid-width: 2;
+
   flex: 20%;
   display: flex;
   flex-direction: column;
@@ -63,6 +81,11 @@ function onSelect(board: Board, square: Key) {
   }
 
   ol {
+    // render the list as a grid to better utilize horizontal space
+    display: grid;
+    grid-template-columns: repeat(var(--move-grid-width), 1fr);
+    grid-template-rows: repeat(var(--move-grid-width), 1fr);
+
     padding: 0;
     flex: 0 auto;
     overflow-y: scroll;
@@ -71,6 +94,7 @@ function onSelect(board: Board, square: Key) {
     counter-reset: move-counter;
 
     li {
+      border-bottom: 1px solid var(--color-border);
       counter-increment: move-counter;
       font-weight: bold;
       padding: 2px;
@@ -90,8 +114,13 @@ function onSelect(board: Board, square: Key) {
         background: rgba(255, 255, 255, 0.1);
       }
 
-      &:not(:last-child) {
-        border-bottom: 1px solid var(--color-border);
+      // animate items as they are appended
+      transition: 0.5s ease;
+      transition-property: background-color, color;
+
+      &.list-enter-from {
+        background: rgba(255, 255, 255, 0.8);
+        color: #666;
       }
     }
   }
@@ -105,17 +134,12 @@ function onSelect(board: Board, square: Key) {
   }
 
   .moves {
+    --move-grid-width: 4;
+
     // in portrait mode, bottom (sidebar) panel should consume
     // available space below board
     flex: 80%;
     margin-top: 0;
-
-    ol {
-      // render the list as a grid to better utilize horizontal space
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: repeat(4, 1fr);
-    }
   }
 }
 </style>
